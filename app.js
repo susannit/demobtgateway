@@ -58,6 +58,6 @@ app.post('/api/v1/process', jsonParser, function (request, response) {
   });
 });
 
-app.listen(3000, function () {
+app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port 3000');
 });
