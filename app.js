@@ -4,6 +4,8 @@ var util = require('util');
 var express = require('express');
 var braintree = require('braintree');
 var bodyParser = require('body-parser');
+var mongodb = require("mongodb");
+var ObjectID = mongodb.ObjectID;
 
 /**
  * Instantiate your server and a JSON parser to parse all incoming requests
@@ -19,6 +21,27 @@ var gateway = braintree.connect({
   merchantId:   '6dr2nwjy8f56mqyt',
   publicKey:    'yxhwjftm8t34rcmg',
   privateKey:   '21fa3101d6721f02312a2503985db88c'
+});
+
+// Create a database variable outside of the database connection callback to reuse the connection pool in your app.
+var db;
+
+// Connect to the database before starting the application server.
+mongodb.MongoClient.connect(process.env.MONGODB_URI, function (err, database) {
+  if (err) {
+    console.log(err);
+    process.exit(1);
+  }
+
+  // Save database object from the callback for reuse.
+  db = database;
+  console.log("Database connection ready");
+
+  // Initialize the app.
+  var server = app.listen(process.env.PORT || 8080, function () {
+    var port = server.address().port;
+    console.log("App now running on port", port);
+  });
 });
 
 /**
@@ -58,6 +81,6 @@ app.post('/api/v1/process', jsonParser, function (request, response) {
   });
 });
 
-app.listen(process.env.PORT || 3000, function () {
+/*app.listen(process.env.PORT || 3000, function () {
   console.log('Listening on port'+process.env.PORT);
-});
+});*/
